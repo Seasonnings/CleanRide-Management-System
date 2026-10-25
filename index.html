@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CleanRide Management System | Modern Upholstery & Vehicle Cleaning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand-logo" id="brandLogo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div class="logo-text">
+          <span class="brand-title">CleanRide</span>
+          <span class="brand-subtitle">Upholstery & Mobile Care</span>
+        </div>
+      </div>
+
+      <!-- User Role Status / Switcher -->
+      <div class="nav-actions">
+        <div class="quick-role-toggle" id="quickRoleSwitch">
+          <span class="role-label">Mode:</span>
+          <button class="role-pill active" id="pillCustomer" onclick="switchRole('customer')">
+            <i class="fa-solid fa-user"></i> Customer
+          </button>
+          <button class="role-pill" id="pillOwner" onclick="switchRole('owner')">
+            <i class="fa-solid fa-user-shield"></i> Owner / Manager
+          </button>
+        </div>
+
+        <div class="user-profile-badge" id="userProfileBadge">
+          <div class="avatar" id="navAvatar">JD</div>
+          <div class="user-meta">
+            <span class="user-name" id="navUserName">John Doe</span>
+            <span class="user-role-badge" id="navUserRole">Customer</span>
+          </div>
+          <button class="btn-logout" title="Log Out" onclick="handleLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Main App Shell -->
+  <main class="main-content">
+    
+    <!-- ================= CUSTOMER PORTAL ================= -->
+    <section id="customerPortal" class="portal-view active">
+      <!-- Customer Hero / Welcome Header -->
+      <div class="customer-hero">
+        <div class="hero-content">
+          <span class="hero-tag"><i class="fa-solid fa-droplet"></i> Premium Mobile Upholstery & Vehicle Care</span>
+          <h1>Professional Cleaning Delivered To Your Doorstep</h1>
+          <p>We travel directly to your location with professional-grade extraction tools for vehicles, sofas, carpets, and equipment rental.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="navigateToCustomerTab('request-service')">
+              <i class="fa-solid fa-calendar-plus"></i> Request Service Now
+            </button>
+            <button class="btn btn-secondary" onclick="navigateToCustomerTab('my-jobs')">
+              <i class="fa-solid fa-clipboard-list"></i> View My Bookings
+            </button>
+          </div>
+        </div>
+        <div class="hero-highlights">
+          <div class="highlight-card">
+            <div class="hl-icon hl-blue"><i class="fa-solid fa-van-shuttle"></i></div>
+            <div>
+              <strong>On-Site Travel</strong>
+              <span>We come directly to you</span>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="hl-icon hl-teal"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+              <strong>Transparent Pricing</strong>
+              <span>Per seat, area & dirtiness</span>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="hl-icon hl-sky"><i class="fa-solid fa-gauge-high"></i></div>
+            <div>
+              <strong>Daily Capacity Cap</strong>
+              <span>Guaranteed quality service</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Navigation Tabs -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-cust-tab="request-service" onclick="switchCustomerTab('request-service')">
+          <i class="fa-solid fa-calendar-plus"></i> 1. Request Service
+        </button>
+        <button class="tab-btn" data-cust-tab="my-jobs" onclick="switchCustomerTab('my-jobs')">
+          <i class="fa-solid fa-list-check"></i> 2. Display Job List
+          <span class="tab-badge" id="customerJobBadge">0</span>
+        </button>
+        <button class="tab-btn" data-cust-tab="lodge-complaint" onclick="switchCustomerTab('lodge-complaint')">
+          <i class="fa-solid fa-headset"></i> 3. Lodge Complaint / Report
+        </button>
+      </div>
+
+      <!-- Tab 1: Request Service Form & Dynamic Costing -->
+      <div id="custTab-request-service" class="tab-content active">
+        <div class="form-layout-grid">
+          <!-- Main Form Card -->
+          <div class="card form-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2><i class="fa-solid fa-sparkles text-primary"></i> Service Booking & Customization</h2>
+                <p>Fill out your details. Our mobile cleaning team travels to your designated address.</p>
+              </div>
+              <span class="badge badge-info"><i class="fa-regular fa-clock"></i> 3-Min Form</span>
+            </div>
+
+            <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
+              <!-- Section: Customer Info -->
+              <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-id-card"></i> Customer Information</h3>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="custFullName">Full Name *</label>
+                    <input type="text" id="custFullName" required placeholder="e.g. Sarah Jenkins">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="custPhone">Phone Number *</label>
+                    <input type="tel" id="custPhone" required placeholder="e.g. +60 12-889 4432">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group flex-2">
+                    <label for="custLocation">Service Location / Address *</label>
+                    <input type="text" id="custLocation" required placeholder="e.g. No 45, Jalan Harmoni 3, Bukit Indah">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="custDate">Service Date *</label>
+                    <input type="date" id="custDate" required onchange="checkDailyCapacity()">
+                    <small id="capacityFeedback" class="field-hint"></small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Service Type Selection -->
+              <div class="form-section">
+                <h3 class="section-title"><i class="fa-solid fa-spray-can-sparkles"></i> Select Service Category *</h3>
+                <div class="service-type-grid">
+                  <label class="service-option-card">
+                    <input type="radio" name="serviceCategory" value="vehicle" checked onchange="toggleServiceFields()">
+                    <div class="card-inner">
+                      <div class="svc-icon"><i class="fa-solid fa-car-side"></i></div>
+                      <div class="svc-meta">
+                        <strong>Vehicle Interior</strong>
+                        <span>Priced per seat or bus fleet</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="service-option-card">
+                    <input type="radio" name="serviceCategory" value="furniture" onchange="toggleServiceFields()">
+                    <div class="card-inner">
+                      <div class="svc-icon"><i class="fa-solid fa-couch"></i></div>
+                      <div class="svc-meta">
+                        <strong>Sofa & Furniture</strong>
+                        <span>Priced per furniture piece</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="service-option-card">
+                    <input type="radio" name="serviceCategory" value="carpet" onchange="toggleServiceFields()">
+                    <div class="card-inner">
+                      <div class="svc-icon"><i class="fa-solid fa-rug"></i></div>
+                      <div class="svc-meta">
+                        <strong>Carpet Cleaning</strong>
+                        <span>Priced per area (m² / sq ft)</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="service-option-card">
+                    <input type="radio" name="serviceCategory" value="rental" onchange="toggleServiceFields()">
+                    <div class="card-inner">
+                      <div class="svc-icon"><i class="fa-solid fa-toolbox"></i></div>
+                      <div class="svc-meta">
+                        <strong>Equipment Rental</strong>
+                        <span>Rent extractors & steam tools</span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Dynamic Sub-Fields Based on Selection -->
+              
+              <!-- 1. Vehicle Fields -->
+              <div id="serviceFields-vehicle" class="dynamic-service-box">
+                <h4 class="sub-heading"><i class="fa-solid fa-car"></i> Vehicle Interior Details</h4>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="vehiclePlate">Vehicle Plate Number (PK) *</label>
+                    <input type="text" id="vehiclePlate" placeholder="e.g. VDK 4921 or Fleet-B01">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="vehicleTypeSelect">Vehicle Category</label>
+                    <select id="vehicleTypeSelect" onchange="calculateQuote()">
+                      <option value="sedan">Personal Car (5 Seats) - RM 25 / seat</option>
+                      <option value="suv">SUV / MPV (7 Seats) - RM 25 / seat</option>
+                      <option value="commercial">Company / Bus Service (Multi-vehicle)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row" id="busFleetRow" style="display: none;">
+                  <div class="form-group flex-1">
+                    <label for="vehicleCount">Number of Vehicles / Buses (Bil Vehicle)</label>
+                    <input type="number" id="vehicleCount" min="1" value="1" oninput="calculateQuote()">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="vehicleSeats">Total Seats per Vehicle</label>
+                    <input type="number" id="vehicleSeats" min="1" value="30" oninput="calculateQuote()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Furniture Fields -->
+              <div id="serviceFields-furniture" class="dynamic-service-box" style="display: none;">
+                <h4 class="sub-heading"><i class="fa-solid fa-couch"></i> Sofa & Furniture Details</h4>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="furnitureType">Furniture Item</label>
+                    <select id="furnitureType" onchange="calculateQuote()">
+                      <option value="sofa_1">Single Recliner / Armchair (RM 50)</option>
+                      <option value="sofa_2">2-Seater Fabric Sofa (RM 90)</option>
+                      <option value="sofa_3">3-Seater L-Shape Sofa (RM 140)</option>
+                      <option value="dining_chair">Dining Chair Set (4 Chairs) (RM 70)</option>
+                      <option value="mattress_queen">Queen / King Mattress (RM 110)</option>
+                      <option value="curtains">Full Set Window Curtains (RM 85)</option>
+                    </select>
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="furnitureQuantity">Quantity of Sets / Pieces</label>
+                    <input type="number" id="furnitureQuantity" min="1" value="1" oninput="calculateQuote()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Carpet Fields -->
+              <div id="serviceFields-carpet" class="dynamic-service-box" style="display: none;">
+                <h4 class="sub-heading"><i class="fa-solid fa-rug"></i> Carpet Cleaning Dimensions</h4>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="carpetArea">Carpet Area Cleaned (in m² / sq ft area²)</label>
+                    <input type="number" id="carpetArea" min="1" value="15" placeholder="e.g. 15 m²" oninput="calculateQuote()">
+                    <small class="field-hint">Base price: RM 8.00 per m² area</small>
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="carpetType">Carpet Material / Pile</label>
+                    <select id="carpetType" onchange="calculateQuote()">
+                      <option value="standard">Standard Low-Pile Office / Rug</option>
+                      <option value="shag">Shag / High-Pile Luxury Rug (+RM 20)</option>
+                      <option value="wool">Persian / Delicate Wool (+RM 35)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. Rental Equipment Fields -->
+              <div id="serviceFields-rental" class="dynamic-service-box" style="display: none;">
+                <h4 class="sub-heading"><i class="fa-solid fa-toolbox"></i> Equipment Rental Tools</h4>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="rentalEquipment">Select Tool to Rent</label>
+                    <select id="rentalEquipment" onchange="calculateQuote()">
+                      <option value="extractor">Industrial Spray-Extraction Machine (RM 25 / hr)</option>
+                      <option value="steam">High-Temp Sanitizing Steam Cleaner (RM 30 / hr)</option>
+                      <option value="vacuum">Heavy-Duty Wet & Dry Extractor Vacuum (RM 20 / hr)</option>
+                      <option value="blower">Rapid Turbo Carpet Air Blower (RM 15 / hr)</option>
+                      <option value="full_kit">Complete Pro Detailing Kit (All Tools) (RM 65 / hr)</option>
+                    </select>
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="rentalHours">Rental Duration (Hours)</label>
+                    <input type="number" id="rentalHours" min="1" max="72" value="3" oninput="calculateQuote()">
+                    <small class="field-hint">Hourly billing with standard safety deposit</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Dirtiness Level (PDF Requirement) -->
+              <div class="form-section">
+                <div class="section-title-with-badge">
+                  <h3 class="section-title"><i class="fa-solid fa-fire-flame-curved"></i> Condition / Dirtiness Severity</h3>
+                  <span class="badge badge-warning"><i class="fa-solid fa-circle-info"></i> Influences Total Price</span>
+                </div>
+                <p class="section-desc">According to CleanRide guidelines, dirtier surfaces require multi-pass enzyme treatments and deep extraction passes.</p>
+                
+                <div class="dirt-level-selector">
+                  <label class="dirt-option">
+                    <input type="radio" name="dirtinessLevel" value="light" checked onchange="calculateQuote()">
+                    <div class="dirt-box">
+                      <span class="dirt-tag tag-green">Light</span>
+                      <strong>Regular Dust & Refresh</strong>
+                      <span>1.0x Base multiplier</span>
+                    </div>
+                  </label>
+
+                  <label class="dirt-option">
+                    <input type="radio" name="dirtinessLevel" value="medium" onchange="calculateQuote()">
+                    <div class="dirt-box">
+                      <span class="dirt-tag tag-yellow">Medium</span>
+                      <strong>Moderate Stains / Pet Odor</strong>
+                      <span>1.25x Multiplier</span>
+                    </div>
+                  </label>
+
+                  <label class="dirt-option">
+                    <input type="radio" name="dirtinessLevel" value="heavy" onchange="calculateQuote()">
+                    <div class="dirt-box">
+                      <span class="dirt-tag tag-red">Heavy</span>
+                      <strong>Deep Gunk, Mold & Spills</strong>
+                      <span>1.50x Deep Restoration</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Special Instructions -->
+              <div class="form-group">
+                <label for="bookingNotes">Special Instructions / Parking / Gate Access</label>
+                <textarea id="bookingNotes" rows="2" placeholder="e.g. Please call upon reaching guardhouse, water tap available on driveway."></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitBooking">
+                  <i class="fa-solid fa-lock"></i> Proceed to Deposit Payment
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Real-Time Pricing Summary Sidebar -->
+          <div class="quote-sidebar">
+            <div class="card quote-card sticky-card">
+              <div class="quote-header">
+                <h3><i class="fa-solid fa-receipt"></i> Booking Cost Breakdown</h3>
+                <span class="live-pill"><span class="dot"></span> Live Quote</span>
+              </div>
+
+              <div class="quote-body">
+                <div class="quote-line">
+                  <span class="q-label" id="summaryServiceTitle">Vehicle Interior (Sedan)</span>
+                  <span class="q-val" id="summaryBasePrice">RM 125.00</span>
+                </div>
+                <div class="quote-line">
+                  <span class="q-label">Condition Multiplier (<span id="summaryDirtLabel">Light</span>)</span>
+                  <span class="q-val" id="summaryDirtMultiplier">1.00x</span>
+                </div>
+                <div class="quote-line">
+                  <span class="q-label">Mobile On-Site Travel Fee</span>
+                  <span class="q-val text-success">FREE</span>
+                </div>
+
+                <div class="quote-divider"></div>
+
+                <div class="quote-total-row">
+                  <span class="total-label">Estimated Total:</span>
+                  <span class="total-val" id="summaryTotalPrice">RM 125.00</span>
+                </div>
+
+                <div class="deposit-highlight-box">
+                  <div class="dep-row">
+                    <span>Deposit Payable Now (30%):</span>
+                    <strong id="summaryDepositAmount">RM 37.50</strong>
+                  </div>
+                  <div class="dep-row">
+                    <span>Remaining Balance:</span>
+                    <span id="summaryRemainingAmount">RM 87.50</span>
+                  </div>
+                  <small class="dep-note">
+                    <i class="fa-solid fa-shield-check"></i> Remaining balance paid face-to-face upon job completion (Cash, Card or Installment).
+                  </small>
+                </div>
+
+                <div class="booking-guarantees">
+                  <div class="guarantee-item">
+                    <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+                    <span>Free rescheduling up to 24 hrs prior</span>
+                  </div>
+                  <div class="guarantee-item">
+                    <i class="fa-solid fa-certificate text-primary"></i>
+                    <span>Eco-friendly, pet-safe extraction detergents</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Display Job List (Customer's Perspective) -->
+      <div id="custTab-my-jobs" class="tab-content">
+        <div class="section-topbar">
+          <div>
+            <h2><i class="fa-solid fa-clipboard-list text-primary"></i> My Bookings & Jobs</h2>
+            <p>Track your scheduled cleanings, deposit confirmations, and countdown days.</p>
+          </div>
+          <button class="btn btn-secondary" onclick="renderCustomerJobs()">
+            <i class="fa-solid fa-rotate-right"></i> Refresh List
+          </button>
+        </div>
+
+        <div id="customerJobsList" class="jobs-grid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Tab 3: Lodge Complaint / Report -->
+      <div id="custTab-lodge-complaint" class="tab-content">
+        <div class="complaint-layout-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2><i class="fa-solid fa-triangle-exclamation text-warning"></i> Customer Feedback & Complaint Form</h2>
+                <p>Have an issue with a cleaning job or tool rental? Submit a report directly to management.</p>
+              </div>
+            </div>
+
+            <form id="complaintForm" onsubmit="handleComplaintSubmit(event)">
+              <div class="form-row">
+                <div class="form-group flex-1">
+                  <label for="complaintJobSelect">Related Job ID *</label>
+                  <select id="complaintJobSelect" required>
+                    <!-- Dynamically filled with user's jobs -->
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="complaintCategory">Issue Category *</label>
+                  <select id="complaintCategory" required>
+                    <option value="Service Quality">Stains Not Completely Removed</option>
+                    <option value="Schedule Delay">Cleaner Arrived Late</option>
+                    <option value="Equipment Glitch">Rental Tool Malfunction</option>
+                    <option value="Staff Conduct">Staff Conduct / Service Concern</option>
+                    <option value="Billing / Payment">Deposit / Payment Inquiry</option>
+                    <option value="Other">Other Issues</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="complaintSubject">Brief Summary *</label>
+                <input type="text" id="complaintSubject" required placeholder="e.g. Backseat left moist, need urgent touch-up">
+              </div>
+
+              <div class="form-group">
+                <label for="complaintDetails">Detailed Complaint Description *</label>
+                <textarea id="complaintDetails" rows="4" required placeholder="Please describe the issue thoroughly so our manager can assist promptly..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Attach Evidence (Simulated Photo Upload)</label>
+                <div class="file-drop-zone">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <span>Drag & drop photos or click to browse</span>
+                  <input type="file" id="complaintFile" accept="image/*" class="file-input-hidden">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-warning">
+                <i class="fa-solid fa-paper-plane"></i> Submit Formal Complaint
+              </button>
+            </form>
+          </div>
+
+          <!-- Customer's Past Complaints / Reports -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-history"></i> My Submitted Reports</h3>
+              <span class="badge badge-info" id="custComplaintCountBadge">0 Reports</span>
+            </div>
+            <div id="custComplaintsList" class="complaints-history-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= OWNER / MANAGER PORTAL ================= -->
+    <section id="ownerPortal" class="portal-view">
+      <!-- Owner Dashboard Hero Banner -->
+      <div class="owner-header-bar">
+        <div>
+          <span class="role-chip"><i class="fa-solid fa-shield-halved"></i> Owner & Operations Command</span>
+          <h2>CleanRide Operations Dashboard</h2>
+          <p>Oversee daily capacity, accept/reject incoming bookings, track equipment rentals, and view monthly revenue.</p>
+        </div>
+        <div class="owner-quick-stats">
+          <div class="stat-pill">
+            <span class="label">Daily Capacity</span>
+            <strong id="ownerCapacityDisplay">2 / 4 Jobs Today</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-blue"><i class="fa-solid fa-bell-concierge"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-title">Pending Requests</span>
+            <h3 class="kpi-value" id="kpiPendingRequests">0</h3>
+            <span class="kpi-sub text-warning"><i class="fa-solid fa-clock"></i> Requires Approval</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-teal"><i class="fa-solid fa-calendar-check"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-title">Active / Scheduled Jobs</span>
+            <h3 class="kpi-value" id="kpiActiveJobs">0</h3>
+            <span class="kpi-sub text-success"><i class="fa-solid fa-road"></i> In pipeline</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-purple"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-title">Equipment Rentals</span>
+            <h3 class="kpi-value" id="kpiRentals">0</h3>
+            <span class="kpi-sub text-info"><i class="fa-solid fa-handshake"></i> Out on hire</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-emerald"><i class="fa-solid fa-sack-dollar"></i></div>
+          <div class="kpi-content">
+            <span class="kpi-title">Monthly Revenue</span>
+            <h3 class="kpi-value" id="kpiMonthlyRevenue">RM 0.00</h3>
+            <span class="kpi-sub text-success"><i class="fa-solid fa-arrow-trend-up"></i> Collected + Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Owner Navigation Tabs (From JPEG diagram: Request list, Display job list, Rental list, Complaint list, Financial report) -->
+      <div class="tab-nav owner-tabs">
+        <button class="tab-btn active" data-owner-tab="requests" onclick="switchOwnerTab('requests')">
+          <i class="fa-solid fa-inbox"></i> Incoming Requests
+          <span class="tab-badge badge-alert" id="ownerRequestBadge">0</span>
+        </button>
+        <button class="tab-btn" data-owner-tab="jobs" onclick="switchOwnerTab('jobs')">
+          <i class="fa-solid fa-calendar-days"></i> Job Operations List
+        </button>
+        <button class="tab-btn" data-owner-tab="rentals" onclick="switchOwnerTab('rentals')">
+          <i class="fa-solid fa-toolbox"></i> Tool Rental List
+        </button>
+        <button class="tab-btn" data-owner-tab="complaints" onclick="switchOwnerTab('complaints')">
+          <i class="fa-solid fa-comments"></i> Complaint Desk
+          <span class="tab-badge" id="ownerComplaintBadge">0</span>
+        </button>
+        <button class="tab-btn" data-owner-tab="financials" onclick="switchOwnerTab('financials')">
+          <i class="fa-solid fa-chart-line"></i> Financial Revenue Report
+        </button>
+      </div>
+
+      <!-- Owner Tab 1: Incoming Booking Requests (Accept / Reject) -->
+      <div id="ownerTab-requests" class="owner-tab-content active">
+        <div class="section-topbar">
+          <div>
+            <h3><i class="fa-solid fa-envelope-open-text text-primary"></i> Pending Customer Requests</h3>
+            <p>Review new service bookings. Accept or reject based on daily travel routing and vehicle capacity.</p>
+          </div>
+        </div>
+        <div id="ownerRequestList" class="request-cards-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Owner Tab 2: Display Job List (Status Update & Face-to-Face Payment Tracking) -->
+      <div id="ownerTab-jobs" class="owner-tab-content">
+        <div class="section-topbar">
+          <div>
+            <h3><i class="fa-solid fa-list-check text-primary"></i> Scheduled Job Dispatch</h3>
+            <p>Travel to customer address, update service execution, and record remaining face-to-face payments.</p>
+          </div>
+          <div class="filters-row">
+            <select id="jobStatusFilter" onchange="renderOwnerJobs()">
+              <option value="all">All Service Statuses</option>
+              <option value="Accepted">Accepted / Upcoming</option>
+              <option value="In Progress">In Progress (At Location)</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="ownerJobsTable">
+            <thead>
+              <tr>
+                <th>Job ID</th>
+                <th>Customer & Phone</th>
+                <th>Service & Location</th>
+                <th>Countdown</th>
+                <th>Service Status</th>
+                <th>Payment Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ownerJobsTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Owner Tab 3: Rental List (Equipment borrowed & Hourly tracking) -->
+      <div id="ownerTab-rentals" class="owner-tab-content">
+        <div class="section-topbar">
+          <div>
+            <h3><i class="fa-solid fa-toolbox text-primary"></i> Upholstery Cleaning Equipment Rental Logs</h3>
+            <p>Monitor borrowed extractors, vacuum machines, steam units, and hourly hire fees.</p>
+          </div>
+        </div>
+
+        <div class="rental-overview-cards" id="rentalCardsContainer">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Owner Tab 4: Complaints & Reports Management -->
+      <div id="ownerTab-complaints" class="owner-tab-content">
+        <div class="section-topbar">
+          <div>
+            <h3><i class="fa-solid fa-headset text-primary"></i> Customer Resolution & Grievance Desk</h3>
+            <p>Read customer complaints, inspect service logs, and respond with solutions.</p>
+          </div>
+        </div>
+
+        <div id="ownerComplaintList" class="complaints-owner-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Owner Tab 5: Financial Revenue Report -->
+      <div id="ownerTab-financials" class="owner-tab-content">
+        <div class="section-topbar">
+          <div>
+            <h3><i class="fa-solid fa-chart-pie text-primary"></i> Financial & Revenue Analytics</h3>
+            <p>Overview of collected deposits, remaining face-to-face receipts, and revenue by service category.</p>
+          </div>
+          <button class="btn btn-secondary" onclick="exportFinancialSummary()">
+            <i class="fa-solid fa-file-arrow-down"></i> Print / Export Report
+          </button>
+        </div>
+
+        <!-- Revenue Summary Grid -->
+        <div class="financial-metrics-row">
+          <div class="fin-card">
+            <span class="fin-label">Total Gross Revenue</span>
+            <strong class="fin-val" id="finTotalGross">RM 0.00</strong>
+            <small class="fin-note text-info">All booked services</small>
+          </div>
+          <div class="fin-card">
+            <span class="fin-label">Online Deposits Collected</span>
+            <strong class="fin-val text-success" id="finDepositsCollected">RM 0.00</strong>
+            <small class="fin-note">Received through system</small>
+          </div>
+          <div class="fin-card">
+            <span class="fin-label">Face-to-Face Payments Completed</span>
+            <strong class="fin-val text-primary" id="finFaceToFacePaid">RM 0.00</strong>
+            <small class="fin-note">Paid on-site after service</small>
+          </div>
+          <div class="fin-card">
+            <span class="fin-label">Pending / Installment Balance</span>
+            <strong class="fin-val text-warning" id="finPendingBalance">RM 0.00</strong>
+            <small class="fin-note">To be collected upon completion</small>
+          </div>
+        </div>
+
+        <!-- Visual breakdown and breakdowns -->
+        <div class="charts-two-col">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-chart-column"></i> Revenue by Service Category</h3>
+            </div>
+            <div class="category-bars" id="categoryBars">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-coins"></i> Recent Financial Transactions</h3>
+            </div>
+            <div class="recent-tx-list" id="recentTransactionsList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal: Deposit Payment Simulator (PDF Step 3) -->
+  <div id="depositPaymentModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-credit-card text-primary"></i>
+          <h3>Pay Deposit Confirmation</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('depositPaymentModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="payment-summary-strip">
+          <div>
+            <span class="pay-label">Job Booking Reference</span>
+            <strong id="modalJobRef">CR-JOB-001</strong>
+          </div>
+          <div class="text-right">
+            <span class="pay-label">Required 30% Deposit</span>
+            <strong class="pay-amount" id="modalDepositAmount">RM 37.50</strong>
+          </div>
+        </div>
+
+        <div class="payment-method-selector">
+          <label class="pay-method-opt active">
+            <input type="radio" name="payMethod" value="card" checked>
+            <span><i class="fa-solid fa-credit-card"></i> Credit / Debit Card</span>
+          </label>
+          <label class="pay-method-opt">
+            <input type="radio" name="payMethod" value="fpx">
+            <span><i class="fa-solid fa-building-columns"></i> FPX Online Banking</span>
+          </label>
+          <label class="pay-method-opt">
+            <input type="radio" name="payMethod" value="ewallet">
+            <span><i class="fa-solid fa-wallet"></i> Touch 'n Go / GrabPay</span>
+          </label>
+        </div>
+
+        <div class="mock-card-fields" id="cardFields">
+          <div class="form-group">
+            <label>Cardholder Name</label>
+            <input type="text" id="payCardName" value="John Doe">
+          </div>
+          <div class="form-group">
+            <label>Card Number</label>
+            <input type="text" value="•••• •••• •••• 4242" readonly>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Expiry</label>
+              <input type="text" value="12/28" readonly>
+            </div>
+            <div class="form-group flex-1">
+              <label>CVV</label>
+              <input type="text" value="888" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Secure sandbox payment. Remaining balance will be settled on-site (Cash, DuitNow QR, or Card).</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('depositPaymentModal')">Cancel</button>
+        <button class="btn btn-primary" id="btnConfirmPayDeposit" onclick="confirmDepositPayment()">
+          <i class="fa-solid fa-lock"></i> Authorize & Pay Deposit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Job Details Viewer (PDF & JPEG Details requirement) -->
+  <div id="jobDetailsModal" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-file-lines text-primary"></i>
+          <h3 id="modalJobTitle">Job Details & Status</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('jobDetailsModal')">&times;</button>
+      </div>
+
+      <div class="modal-body" id="modalJobDetailsBody">
+        <!-- Injected via JS -->
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('jobDetailsModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Owner Status / Payment Update -->
+  <div id="ownerStatusModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-pen-to-square text-primary"></i>
+          <h3>Update Job & Payment Status</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('ownerStatusModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="editJobId">
+
+        <div class="form-group">
+          <label for="editServiceStatus">Service Progress Status</label>
+          <select id="editServiceStatus">
+            <option value="Accepted">Accepted & Scheduled</option>
+            <option value="In Progress">In Progress (Team at Location)</option>
+            <option value="Completed">Completed (Cleaned & Inspected)</option>
+            <option value="Rejected">Rejected / Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editPaymentStatus">Remaining Payment Status (Face-to-Face)</label>
+          <select id="editPaymentStatus">
+            <option value="Deposit Paid">Deposit Paid (Pending Final Settlement)</option>
+            <option value="Installment Payment">Installment Payment (Partial Received)</option>
+            <option value="Completed">Payment Completed (Fully Settled)</option>
+          </select>
+          <small class="field-hint">PDF requirement: Payment pending, completed, installment payment</small>
+        </div>
+
+        <div class="form-group">
+          <label for="editManagerNotes">Manager Operations Note</label>
+          <textarea id="editManagerNotes" rows="2" placeholder="e.g. Completed exterior steam pass; cash receipt issued."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('ownerStatusModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveJobStatusUpdate()">Save Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Complaint Resolution (Owner replying) -->
+  <div id="complaintResolveModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-reply text-primary"></i>
+          <h3>Respond to Complaint</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('complaintResolveModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="replyComplaintId">
+        <div id="complaintSummarySnippet" class="snippet-box"></div>
+
+        <div class="form-group">
+          <label for="ownerComplaintReply">Owner / Manager Official Response *</label>
+          <textarea id="ownerComplaintReply" rows="3" required placeholder="e.g. We apologize for the inconvenience. Our technician will visit tomorrow at 10 AM for a free touch-up."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="complaintStatusSelect">Update Complaint Status</label>
+          <select id="complaintStatusSelect">
+            <option value="In Review">In Review</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('complaintResolveModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveComplaintReply()">Send Resolution</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <p>CleanRide Management System &bull; Soft Blue Modern Upholstery & Cleaning Architecture</p>
+      <div class="footer-links">
+        <span>Owner Helpline: <strong>+60 12-345 6789</strong></span>
+        <span>&bull;</span>
+        <span>Daily Capacity Cap: <strong>4 Jobs / Day</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
