@@ -1,13 +1,10 @@
 /**
  * CleanRide Customer Portal Logic
  * Implements wireframe specifications:
- * - Collapsible sidebar (Home, Request, List, Report)
- * - Homepage with upcoming appointments & report alerts
- * - Service Request form with floating cost breakdown
- * - Pop-out Payment Modal (Reference, Payment method, Information, Cancel, Submit)
- * - Display Appointment List with Pop-out Details Window
- * - Lodge Complaint / Report 2-column layout (form + submitted reports)
- * - Footer (Logo, Profile, Exit)
+ * - Header: Exit (Left), CleanRide Logo (Center), Profile (Right)
+ * - Sidebar: Three-bar toggle at top, no collapse button, compact spacing
+ * - Form: Empty full name, no phone, and date (no sample inputs)
+ * - Footer: Company name, address, phone number
  */
 
 const STORAGE_KEYS = {
@@ -77,8 +74,6 @@ function loadData() {
   const storedComplaints = localStorage.getItem(STORAGE_KEYS.COMPLAINTS);
 
   if (!storedJobs) {
-    // Seed initial appointments matching the user's wireframe!
-    // Wireframe sample: 18/9/2026 - [Rental] Deep clean, 3/11/2026 - [Carpet] Wedding prep, 4/12/2026 - [Vehicle] Car clean
     const seed = [
       {
         jobId: 'CR-JOB-001',
@@ -154,7 +149,6 @@ function loadData() {
   }
 
   if (!storedComplaints) {
-    // Wireframe sample: "! - Missing item (no response)"
     const seedComplaints = [
       {
         complaintId: 'CR-CMP-101',
@@ -184,25 +178,39 @@ function saveComplaints() {
 }
 
 function setupUI() {
-  // Update customer name & profile chips in UI
-  document.getElementById('homeCustName').textContent = activeCustomer.fullName;
-  document.getElementById('reqCustName').value = activeCustomer.fullName;
-  document.getElementById('reqCustPhone').value = activeCustomer.phone || '+60 12-889 4432';
+  // Update header profile details (Right side of header)
+  const headerName = document.getElementById('headerUserName');
+  const headerEmail = document.getElementById('headerUserEmail');
+  const headerAvatar = document.getElementById('headerAvatar');
 
-  // Footer profile chip
-  document.getElementById('footerUserName').textContent = activeCustomer.fullName;
-  document.getElementById('footerUserEmail').textContent = activeCustomer.email;
-  const initials = activeCustomer.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  document.getElementById('footerAvatar').textContent = initials;
+  if (headerName) headerName.textContent = activeCustomer.fullName || 'Customer Profile';
+  if (headerEmail) headerEmail.textContent = activeCustomer.email || 'customer@cleanride.com';
+  if (headerAvatar) {
+    const initials = (activeCustomer.fullName || 'CU').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    headerAvatar.textContent = initials;
+  }
+
+  // Welcome banner on Home
+  const homeCust = document.getElementById('homeCustName');
+  if (homeCust) homeCust.textContent = activeCustomer.fullName || 'Customer';
+
+  // REQUIREMENT: Empty the full name, no phone, and date (no sample inputs!)
+  const nameInput = document.getElementById('reqCustName');
+  const phoneInput = document.getElementById('reqCustPhone');
+  const dateInput = document.getElementById('reqCustDate');
+  const addrInput = document.getElementById('reqCustAddress');
+
+  if (nameInput) nameInput.value = '';
+  if (phoneInput) phoneInput.value = '';
+  if (dateInput) dateInput.value = '';
+  if (addrInput) addrInput.value = '';
 }
 
 function initDefaultDate() {
   const dateInput = document.getElementById('reqCustDate');
   if (dateInput) {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateStr = tomorrow.toISOString().split('T')[0];
-    dateInput.value = dateStr;
+    // Keep date input empty, but set min to today
+    dateInput.value = '';
     dateInput.min = new Date().toISOString().split('T')[0];
   }
 }
@@ -212,13 +220,8 @@ function initDefaultDate() {
  */
 function toggleSidebar() {
   const sidebar = document.getElementById('appSidebar');
-  const chevron = document.getElementById('collapseChevron');
-  sidebar.classList.toggle('collapsed');
-  
-  if (sidebar.classList.contains('collapsed')) {
-    chevron.className = 'fa-solid fa-chevron-right';
-  } else {
-    chevron.className = 'fa-solid fa-chevron-left';
+  if (sidebar) {
+    sidebar.classList.toggle('collapsed');
   }
 }
 
@@ -261,92 +264,93 @@ function renderAllViews() {
 
 /**
  * ================= 1. HOMEPAGE VIEW =================
- * Wireframe:
- * Welcome, You have X appointment
- * upcoming appoint: 18/9/2026 - [Rental] Deep clean, etc.
- * Report: ! - Missing item (no response)
  */
 function renderHome() {
   const myJobs = jobs.filter(j => j.customerId === activeCustomer.id && j.status !== 'Rejected');
   const myComplaints = complaints.filter(c => c.customerName === activeCustomer.fullName);
 
-  // Welcome count: "You have X appointment"
   const apptCount = myJobs.length;
   const countText = `You have <strong>${apptCount} ${apptCount === 1 ? 'appointment' : 'appointments'}</strong>`;
-  document.getElementById('homeApptSummary').innerHTML = countText;
-  document.getElementById('sideApptBadge').textContent = apptCount;
-  document.getElementById('homeUpcomingBadge').textContent = `${apptCount} Scheduled`;
+  
+  const summaryEl = document.getElementById('homeApptSummary');
+  const badgeEl = document.getElementById('sideApptBadge');
+  const homeBadge = document.getElementById('homeUpcomingBadge');
+
+  if (summaryEl) summaryEl.innerHTML = countText;
+  if (badgeEl) badgeEl.textContent = apptCount;
+  if (homeBadge) homeBadge.textContent = `${apptCount} Scheduled`;
 
   // Upcoming appoint strip list
   const upcomingContainer = document.getElementById('homeUpcomingList');
-  if (myJobs.length === 0) {
-    upcomingContainer.innerHTML = `
-      <div class="empty-state-card">
-        <i class="fa-solid fa-calendar-xmark"></i>
-        <span>No upcoming appointments. Click "Request Service" to book your mobile clean!</span>
-      </div>
-    `;
-  } else {
-    upcomingContainer.innerHTML = myJobs.map(job => {
-      const formattedDate = formatDateDisplay(job.serviceDate);
-      return `
-        <div class="strip-item" onclick="viewAppointmentDetails('${job.jobId}')" title="Click to view details">
-          <div class="strip-left">
-            <span class="strip-date"><i class="fa-regular fa-calendar"></i> ${formattedDate}</span>
-            <span class="strip-title">${job.serviceTitle}</span>
-          </div>
-          <div class="strip-right">
-            <span class="badge ${job.status === 'Completed' ? 'badge-success' : 'badge-info'}">${job.status}</span>
-            <i class="fa-solid fa-chevron-right strip-arrow"></i>
-          </div>
+  if (upcomingContainer) {
+    if (myJobs.length === 0) {
+      upcomingContainer.innerHTML = `
+        <div class="empty-state-card">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          <span>No upcoming appointments. Click "Request Service" to book your mobile clean!</span>
         </div>
       `;
-    }).join('');
+    } else {
+      upcomingContainer.innerHTML = myJobs.map(job => {
+        const formattedDate = formatDateDisplay(job.serviceDate);
+        return `
+          <div class="strip-item" onclick="viewAppointmentDetails('${job.jobId}')" title="Click to view details">
+            <div class="strip-left">
+              <span class="strip-date"><i class="fa-regular fa-calendar"></i> ${formattedDate}</span>
+              <span class="strip-title">${job.serviceTitle}</span>
+            </div>
+            <div class="strip-right">
+              <span class="badge ${job.status === 'Completed' ? 'badge-success' : 'badge-info'}">${job.status}</span>
+              <i class="fa-solid fa-chevron-right strip-arrow"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
-  // Report strip list (Wireframe: "! - Missing item (no response)")
+  // Report strip list
   const reportContainer = document.getElementById('homeReportList');
   const pendingReportCount = myComplaints.filter(c => c.status !== 'Resolved').length;
   const sideReportBadge = document.getElementById('sideReportBadge');
 
-  if (pendingReportCount > 0) {
-    sideReportBadge.style.display = 'inline-flex';
-  } else {
-    sideReportBadge.style.display = 'none';
+  if (sideReportBadge) {
+    sideReportBadge.style.display = pendingReportCount > 0 ? 'inline-flex' : 'none';
   }
 
-  if (myComplaints.length === 0) {
-    reportContainer.innerHTML = `
-      <div class="empty-state-card">
-        <i class="fa-solid fa-circle-check text-success"></i>
-        <span>No issues or complaints reported. CleanRide operations are on schedule!</span>
-      </div>
-    `;
-  } else {
-    reportContainer.innerHTML = myComplaints.map(c => {
-      const isPending = c.status === 'Pending Review';
-      return `
-        <div class="strip-item strip-alert-item" onclick="navigateTo('report')">
-          <div class="strip-left">
-            <span class="alert-exclamation"><i class="fa-solid fa-circle-exclamation"></i></span>
-            <div>
-              <strong class="strip-title">! - ${c.subject} ${isPending ? '(no response yet)' : ''}</strong>
-              <small class="strip-sub">Ref: ${c.jobId} &bull; ${formatDateDisplay(c.createdAt)}</small>
-            </div>
-          </div>
-          <span class="badge ${c.status === 'Resolved' ? 'badge-success' : 'badge-warning'}">${c.status}</span>
+  if (reportContainer) {
+    if (myComplaints.length === 0) {
+      reportContainer.innerHTML = `
+        <div class="empty-state-card">
+          <i class="fa-solid fa-circle-check text-success"></i>
+          <span>No issues or complaints reported. CleanRide operations are on schedule!</span>
         </div>
       `;
-    }).join('');
+    } else {
+      reportContainer.innerHTML = myComplaints.map(c => {
+        const isPending = c.status === 'Pending Review';
+        return `
+          <div class="strip-item strip-alert-item" onclick="navigateTo('report')">
+            <div class="strip-left">
+              <span class="alert-exclamation"><i class="fa-solid fa-circle-exclamation"></i></span>
+              <div>
+                <strong class="strip-title">! - ${c.subject} ${isPending ? '(no response yet)' : ''}</strong>
+                <small class="strip-sub">Ref: ${c.jobId} &bull; ${formatDateDisplay(c.createdAt)}</small>
+              </div>
+            </div>
+            <span class="badge ${c.status === 'Resolved' ? 'badge-success' : 'badge-warning'}">${c.status}</span>
+          </div>
+        `;
+      }).join('');
+    }
   }
 }
 
 /**
  * ================= 2. REQUEST SERVICE VIEW =================
- * Real-time Floating Window Quote calculation
  */
 function switchCategoryFields() {
-  const selectedCat = document.querySelector('input[name="serviceCategory"]:checked').value;
+  const selectedCat = document.querySelector('input[name="serviceCategory"]:checked')?.value || 'vehicle';
   const cats = ['vehicle', 'furniture', 'carpet', 'rental'];
 
   cats.forEach(c => {
@@ -419,13 +423,21 @@ function calculateFloatingQuote() {
   const remainingPrice = totalPrice - depositPrice;
 
   // Update floating cost window
-  document.getElementById('fltServiceTitle').textContent = title;
-  document.getElementById('fltBasePrice').textContent = `RM ${basePrice.toFixed(2)}`;
-  document.getElementById('fltDirtLevel').textContent = capitalize(dirtLevel);
-  document.getElementById('fltDirtMultiplier').textContent = `${effectiveMultiplier.toFixed(2)}x`;
-  document.getElementById('fltTotalPrice').textContent = `RM ${totalPrice.toFixed(2)}`;
-  document.getElementById('fltDepositPrice').textContent = `RM ${depositPrice.toFixed(2)}`;
-  document.getElementById('fltRemainingPrice').textContent = `RM ${remainingPrice.toFixed(2)}`;
+  const titleEl = document.getElementById('fltServiceTitle');
+  const baseEl = document.getElementById('fltBasePrice');
+  const dirtEl = document.getElementById('fltDirtLevel');
+  const multEl = document.getElementById('fltDirtMultiplier');
+  const totalEl = document.getElementById('fltTotalPrice');
+  const depEl = document.getElementById('fltDepositPrice');
+  const remEl = document.getElementById('fltRemainingPrice');
+
+  if (titleEl) titleEl.textContent = title;
+  if (baseEl) baseEl.textContent = `RM ${basePrice.toFixed(2)}`;
+  if (dirtEl) dirtEl.textContent = capitalize(dirtLevel);
+  if (multEl) multEl.textContent = `${effectiveMultiplier.toFixed(2)}x`;
+  if (totalEl) totalEl.textContent = `RM ${totalPrice.toFixed(2)}`;
+  if (depEl) depEl.textContent = `RM ${depositPrice.toFixed(2)}`;
+  if (remEl) remEl.textContent = `RM ${remainingPrice.toFixed(2)}`;
 
   return {
     category,
@@ -440,7 +452,7 @@ function calculateFloatingQuote() {
 }
 
 /**
- * Capacity validation (PDF Step 2)
+ * Capacity validation
  */
 function checkCapacityForDate() {
   const dateInput = document.getElementById('reqCustDate');
@@ -449,44 +461,54 @@ function checkCapacityForDate() {
   if (!dateInput || !notice) return true;
 
   const dateVal = dateInput.value;
-  if (!dateVal) return true;
+  if (!dateVal) {
+    notice.innerHTML = '';
+    if (btn) btn.disabled = false;
+    return true;
+  }
 
   const bookingsOnDate = jobs.filter(j => j.serviceDate === dateVal && j.status !== 'Rejected').length;
   const max = OWNER_CONTACT.dailyMaxCapacity;
 
   if (bookingsOnDate >= max) {
     notice.innerHTML = `<span class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Daily limit reached (${bookingsOnDate}/${max}). CleanRide daily capacity is full on this day. Please select another date.</span>`;
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
     return false;
   } else {
     notice.innerHTML = `<span class="text-success"><i class="fa-solid fa-circle-check"></i> ${bookingsOnDate}/${max} slots booked. Capacity available for mobile travel.</span>`;
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
     return true;
   }
 }
 
 /**
- * Handle Request Form Submit -> Pop-Out Payment Window (Wireframe requirement!)
+ * Handle Request Form Submit
  */
 function handleRequestSubmit(e) {
   e.preventDefault();
+
+  const name = document.getElementById('reqCustName').value.trim();
+  const phone = document.getElementById('reqCustPhone').value.trim();
+  const address = document.getElementById('reqCustAddress').value.trim();
+  const date = document.getElementById('reqCustDate').value;
+  const instructions = document.getElementById('reqSpecialInstructions').value.trim();
+
+  // Validate user provided required information
+  if (!name || !phone || !address || !date) {
+    showToast('Please fill in your full name, phone number, service address, and date.', 'warning');
+    return;
+  }
 
   if (!checkCapacityForDate()) {
     showToast('Daily capacity cap reached. Please pick another date.', 'danger');
     return;
   }
 
-  const name = document.getElementById('reqCustName').value.trim() || activeCustomer.fullName;
-  const phone = document.getElementById('reqCustPhone').value.trim() || activeCustomer.phone;
-  const address = document.getElementById('reqCustAddress').value.trim();
-  const date = document.getElementById('reqCustDate').value;
-  const instructions = document.getElementById('reqSpecialInstructions').value.trim();
-
   const quote = calculateFloatingQuote();
 
   let details = {};
   if (quote.category === 'vehicle') {
-    details.vehiclePlate = document.getElementById('vPlate').value.trim() || 'VDK 4921';
+    details.vehiclePlate = document.getElementById('vPlate').value.trim() || 'WXX 1234';
     details.vehicleType = document.getElementById('vType').value;
   } else if (quote.category === 'furniture') {
     details.furnitureType = document.getElementById('fItem').value;
@@ -533,7 +555,7 @@ function handleRequestSubmit(e) {
 }
 
 /**
- * Confirm Payment & Create Job (PDF Step 3)
+ * Confirm Payment & Create Job
  */
 function confirmPaymentAndCreateJob() {
   if (!pendingRequestData) return;
@@ -552,9 +574,12 @@ function confirmPaymentAndCreateJob() {
 
     showToast(`Payment successful! Booking reference ${pendingRequestData.jobId} confirmed.`, 'success');
 
-    // Reset Form
+    // Reset Form - Keep inputs empty
     document.getElementById('custBookingForm').reset();
-    initDefaultDate();
+    document.getElementById('reqCustName').value = '';
+    document.getElementById('reqCustPhone').value = '';
+    document.getElementById('reqCustDate').value = '';
+    document.getElementById('reqCustAddress').value = '';
     calculateFloatingQuote();
     checkCapacityForDate();
 
@@ -567,12 +592,6 @@ function confirmPaymentAndCreateJob() {
 
 /**
  * ================= 3. DISPLAY APPOINTMENT LIST VIEW =================
- * Wireframe:
- * "You have 3 upcoming appointment"
- * appointment 1 [details]
- * appointment 2 [details]
- * appointment 3 [details]
- * + details of appointment will shows as pop out window
  */
 function renderAppointmentList() {
   const container = document.getElementById('appointmentListContainer');
@@ -618,7 +637,6 @@ function renderAppointmentList() {
         </div>
 
         <div class="appt-actions">
-          <!-- Wireframe exact: [details] button -->
           <button class="btn btn-primary btn-appt-details" onclick="viewAppointmentDetails('${job.jobId}')">
             <i class="fa-regular fa-file-lines"></i> Details
           </button>
@@ -629,7 +647,7 @@ function renderAppointmentList() {
 }
 
 /**
- * Details Pop-Out Window (Wireframe requirement: "+ details of the appointment will shows as pop out window")
+ * Details Pop-Out Window
  */
 function viewAppointmentDetails(jobId) {
   const job = jobs.find(j => j.jobId === jobId);
@@ -643,8 +661,6 @@ function viewAppointmentDetails(jobId) {
 
   body.innerHTML = `
     <div class="modal-detail-grid">
-      
-      <!-- Top info boxes -->
       <div class="detail-box">
         <span class="box-tag">Appointment Schedule</span>
         <div class="date-large">${formattedDate}</div>
@@ -664,10 +680,8 @@ function viewAppointmentDetails(jobId) {
           <i class="fa-solid fa-phone"></i> Call Operations Team
         </a>
       </div>
-
     </div>
 
-    <!-- Service Spec -->
     <div class="card detail-content-card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
         <h4 style="margin: 0; font-size: 1.1rem;"><i class="fa-solid fa-wand-magic-sparkles text-primary"></i> ${job.serviceTitle}</h4>
@@ -683,7 +697,6 @@ function viewAppointmentDetails(jobId) {
       </div>
     </div>
 
-    <!-- Payment Breakdown (PDF Step 3, 4, 5) -->
     <div class="payment-pop-breakdown">
       <div class="p-row">
         <span>Total Service Cost:</span>
@@ -710,7 +723,6 @@ function viewAppointmentDetails(jobId) {
 
 /**
  * ================= 4. LODGE COMPLAINT / REPORT VIEW =================
- * Wireframe 2-Column: Left column = "form", Right column = "submitted reports"
  */
 function renderReportsPage() {
   populateReportDropdown();
@@ -860,7 +872,6 @@ function formatDateDisplay(dateStr) {
   if (!dateStr) return '';
   const parts = dateStr.split('-');
   if (parts.length === 3) {
-    // DD/MM/YYYY
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
   const d = new Date(dateStr);

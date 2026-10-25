@@ -52,8 +52,8 @@
 
   --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  --sidebar-width: 250px;
-  --sidebar-collapsed-width: 76px;
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 72px;
 }
 
 /* Base Reset */
@@ -89,7 +89,7 @@ a {
 }
 
 /* =========================================================
-   1. AUTHENTICATION PAGES (login.html)
+   1. AUTHENTICATION (login.html)
    ========================================================= */
 .auth-body {
   min-height: 100vh;
@@ -240,7 +240,11 @@ a {
 }
 
 /* =========================================================
-   2. CUSTOMER PORTAL APPLICATION SHELL (customer.html)
+   2. TOP HEADER (SWAPPED WITH FOOTER)
+   Requirement:
+   - Exit is LEFT
+   - Logo in the CENTER (Given cleanride-logo.png)
+   - Profile moved to the RIGHT
    ========================================================= */
 .customer-app-body {
   display: flex;
@@ -248,7 +252,6 @@ a {
   min-height: 100vh;
 }
 
-/* --- Header Requirement: (Header: full company name, address, no phone) --- */
 .app-top-header {
   position: sticky;
   top: 0;
@@ -262,85 +265,110 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.85rem 1.5rem;
+  padding: 0.65rem 1.5rem;
   max-width: 1440px;
   margin: 0 auto;
 }
 
+/* Left: Exit */
 .header-left {
+  flex: 1;
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  gap: 1rem;
 }
 
-.sidebar-toggle-btn {
-  background: var(--primary-50);
-  border: 1px solid var(--primary-200);
-  color: var(--primary-700);
-  width: 40px;
-  height: 40px;
+.btn-exit {
+  background: var(--rose-100);
+  color: var(--rose-700);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
   border-radius: var(--radius-md);
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
+  gap: 6px;
+  font-weight: 700;
   transition: var(--transition);
 }
 
-.sidebar-toggle-btn:hover {
-  background: var(--primary-600);
+.btn-exit:hover {
+  background: var(--rose-500);
   color: #fff;
 }
 
-.header-company-info {
+/* Center: Logo */
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-logo-image {
+  height: 48px;
+  width: auto;
+  max-width: 170px;
+  object-fit: contain;
+  display: block;
+  cursor: pointer;
+}
+
+/* Right: Profile */
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-profile-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--slate-100);
+  padding: 4px 12px 4px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--slate-200);
+}
+
+.user-avatar-small {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary-600);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-profile-text {
   display: flex;
   flex-direction: column;
 }
 
-.header-company-name {
-  font-size: 1.1rem;
-  font-weight: 800;
+.header-profile-text strong {
+  font-size: 0.82rem;
   color: var(--slate-900);
+  line-height: 1.1;
 }
 
-.header-company-address {
-  font-size: 0.78rem;
-  color: var(--slate-500);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.header-phone-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: var(--primary-50);
-  border: 1px solid var(--primary-200);
-  padding: 0.45rem 1rem;
-  border-radius: 999px;
-  color: var(--primary-800);
-}
-
-.header-phone-chip i {
-  color: var(--primary-600);
-}
-
-.phone-label {
-  display: block;
+.header-profile-text span {
   font-size: 0.7rem;
-  text-transform: uppercase;
-  font-weight: 700;
   color: var(--slate-500);
 }
 
-.phone-number {
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-/* --- Layout Grid: Sidebar + Scrollable Content --- */
+/* =========================================================
+   3. SIDEBAR (NO EMPTY SPACES, THREE BAR AT TOP)
+   Requirement:
+   - Bring three bar to sidebar
+   - Remove "Collapse Menu" button
+   - No empty spaces in sidebar
+   ========================================================= */
 .app-main-layout {
   display: flex;
   flex: 1;
@@ -349,7 +377,6 @@ a {
   margin: 0 auto;
 }
 
-/* --- Collapsible Sidebar --- */
 .collapsible-sidebar {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
@@ -357,81 +384,78 @@ a {
   border-right: 1.5px solid var(--slate-200);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 1.25rem 0.85rem;
+  justify-content: flex-start;
+  padding: 0.85rem;
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: sticky;
-  top: 68px;
-  height: calc(100vh - 68px - 64px);
+  top: 66px;
+  height: calc(100vh - 66px - 64px);
   overflow-y: auto;
 }
 
 .collapsible-sidebar.collapsed {
   width: var(--sidebar-collapsed-width);
   min-width: var(--sidebar-collapsed-width);
-  padding: 1.25rem 0.5rem;
+  padding: 0.85rem 0.5rem;
 }
 
-.sidebar-brand {
+/* Top: Three Bar Hamburger Toggle */
+.sidebar-top-bar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 0.5rem 1.25rem;
+  padding: 0.35rem 0.5rem 0.75rem;
   border-bottom: 1px solid var(--slate-100);
-  margin-bottom: 1rem;
+  margin-bottom: 0.65rem;
 }
 
-.logo-box {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
-  color: #fff;
-  border-radius: var(--radius-md);
+.sidebar-toggle-btn {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  color: var(--primary-700);
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
-  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.35);
+  font-size: 1rem;
+  transition: var(--transition);
 }
 
-.brand-words {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.sidebar-toggle-btn:hover {
+  background: var(--primary-600);
+  color: #fff;
+  border-color: var(--primary-600);
+}
+
+.sidebar-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-600);
   white-space: nowrap;
 }
 
-.brand-title-side {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--slate-900);
-}
-
-.brand-tag-side {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--primary-600);
-  text-transform: uppercase;
-}
-
-.collapsible-sidebar.collapsed .brand-words {
+.collapsible-sidebar.collapsed .sidebar-title {
   display: none;
 }
 
-/* Nav Items: Home, Request, List, Report */
+/* Navigation items without empty gaps */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  flex: 1;
+  gap: 0.35rem;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.85rem 1rem;
+  padding: 0.8rem 1rem;
   border-radius: var(--radius-md);
   border: none;
   background: transparent;
@@ -488,37 +512,9 @@ a {
   display: none;
 }
 
-.sidebar-collapse-control {
-  padding-top: 1rem;
-  border-top: 1px solid var(--slate-100);
-}
-
-.btn-collapse-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radius-sm);
-  background: var(--slate-50);
-  border: 1px solid var(--slate-200);
-  color: var(--slate-500);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.btn-collapse-toggle:hover {
-  background: var(--slate-100);
-  color: var(--slate-800);
-}
-
-.collapsible-sidebar.collapsed .collapse-label {
-  display: none;
-}
-
-/* --- Scrollable Page Content --- */
+/* =========================================================
+   4. SCROLLABLE PAGE CONTENT
+   ========================================================= */
 .page-content-wrapper {
   flex: 1;
   padding: 2rem 2.25rem 4rem;
@@ -540,7 +536,7 @@ a {
 }
 
 /* =========================================================
-   3. PANEL 1: HOMEPAGE (CUSTOMER)
+   5. HOMEPAGE VIEW
    ========================================================= */
 .welcome-banner-card {
   background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%);
@@ -699,7 +695,7 @@ a {
 }
 
 /* =========================================================
-   4. PANEL 2: REQUEST (CUSTOMER)
+   6. REQUEST FORM & FLOATING WINDOW
    ========================================================= */
 .request-page-layout {
   display: grid;
@@ -919,7 +915,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
 }
 
-/* --- Floating Window Cost Breakdown --- */
+/* Floating Cost Breakdown Window */
 .floating-cost-sidebar {
   position: sticky;
   top: 85px;
@@ -1024,7 +1020,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* =========================================================
-   5. PANEL 3 & 4: LIST (APPOINTMENTS)
+   7. LIST & APPOINTMENTS
    ========================================================= */
 .list-header-banner {
   display: flex;
@@ -1110,7 +1106,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* =========================================================
-   6. PANEL 5: LODGE COMPLAINT / REPORT
+   8. LODGE COMPLAINT / REPORT
    ========================================================= */
 .report-two-col-grid {
   display: grid;
@@ -1183,7 +1179,11 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* =========================================================
-   7. FOOTER (Footer: logo, profile, exit)
+   9. BOTTOM FOOTER (SWAPPED WITH HEADER)
+   Requirement:
+   - Full Company Name
+   - Address
+   - No. Phone
    ========================================================= */
 .app-bottom-footer {
   background: #ffffff;
@@ -1200,101 +1200,59 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   max-width: 1440px;
   margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.footer-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.logo-box-small {
-  width: 32px;
-  height: 32px;
-  background: var(--primary-600);
-  color: #fff;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-}
-
-.brand-text-sm {
+.footer-company-info {
   display: flex;
   flex-direction: column;
 }
 
-.brand-text-sm strong {
-  font-size: 0.88rem;
+.footer-company-name {
+  font-size: 1rem;
+  font-weight: 800;
   color: var(--slate-900);
 }
 
-.brand-text-sm span {
-  font-size: 0.72rem;
+.footer-company-address {
+  font-size: 0.78rem;
   color: var(--slate-500);
-}
-
-.footer-profile-chip {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  background: var(--slate-100);
-  padding: 4px 12px 4px 6px;
+  gap: 4px;
+}
+
+.footer-phone-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  padding: 0.45rem 1rem;
   border-radius: 999px;
-  border: 1px solid var(--slate-200);
+  color: var(--primary-800);
 }
 
-.user-avatar-small {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--primary-600);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.footer-phone-chip i {
+  color: var(--primary-600);
 }
 
-.user-info-small {
-  display: flex;
-  flex-direction: column;
-}
-
-.user-info-small strong {
-  font-size: 0.8rem;
-  color: var(--slate-900);
-}
-
-.user-info-small span {
+.phone-label {
+  display: block;
   font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
   color: var(--slate-500);
 }
 
-.btn-exit {
-  background: var(--rose-100);
-  color: var(--rose-700);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.phone-number {
+  font-size: 0.88rem;
   font-weight: 700;
-  transition: var(--transition);
-}
-
-.btn-exit:hover {
-  background: var(--rose-500);
-  color: #fff;
 }
 
 /* =========================================================
-   8. POP-OUT WINDOWS & MODALS
+   10. MODALS & POP-OUT WINDOWS
    ========================================================= */
 .modal-overlay {
   position: fixed;
@@ -1379,7 +1337,7 @@ input:focus, select:focus, textarea:focus {
   gap: 0.75rem;
 }
 
-/* Modal Popout Internals (Pay Deposit) */
+/* Modal Popout Internals */
 .pop-field-group {
   margin-bottom: 1.25rem;
 }
@@ -1524,7 +1482,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* =========================================================
-   9. BUTTONS, BADGES, TOASTS
+   11. BUTTONS, BADGES, TOASTS
    ========================================================= */
 .btn {
   display: inline-flex;
@@ -1672,7 +1630,8 @@ input:focus, select:focus, textarea:focus {
     border-bottom: 1.5px solid var(--slate-200);
   }
   .sidebar-nav { flex-direction: row; overflow-x: auto; }
-  .sidebar-brand, .sidebar-collapse-control { display: none; }
+  .sidebar-top-bar { display: none; }
   .page-content-wrapper { padding: 1.25rem 1rem 3rem; }
+  .header-inner { flex-direction: column; gap: 0.5rem; text-align: center; }
   .footer-layout { flex-direction: column; gap: 0.75rem; text-align: center; }
 }

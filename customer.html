@@ -12,47 +12,52 @@
 </head>
 <body class="customer-app-body">
 
-  <!-- ================= TOP HEADER ================= -->
-  <!-- Header Requirement: (Header: full company name, address, no phone) -->
+  <!-- ================= TOP HEADER (SWAPPED WITH FOOTER) ================= -->
+  <!-- Requirement: Exit is LEFT, Logo is in the CENTER, Profile is moved to the RIGHT -->
   <header class="app-top-header">
     <div class="header-inner">
+      
+      <!-- 1. Left: Exit -->
       <div class="header-left">
-        <button class="sidebar-toggle-btn" id="sidebarToggle" title="Toggle Sidebar" onclick="toggleSidebar()">
-          <i class="fa-solid fa-bars"></i>
+        <button class="btn btn-exit" onclick="handleExit()" title="Exit & Log Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Exit</span>
         </button>
-        <div class="header-company-info">
-          <h1 class="header-company-name">CleanRide Management System Sdn. Bhd.</h1>
-          <p class="header-company-address">
-            <i class="fa-solid fa-location-dot"></i> No. 45, Jalan Harmoni 3, Bukit Indah, 79100 Iskandar Puteri, Johor
-          </p>
-        </div>
       </div>
 
+      <!-- 2. Center: Logo (Using given CleanRide logo) -->
+      <div class="header-center">
+        <a href="javascript:void(0)" onclick="navigateTo('home')">
+          <img src="cleanride-logo.png" alt="CleanRide Logo" class="header-logo-image">
+        </a>
+      </div>
+
+      <!-- 3. Right: Profile -->
       <div class="header-right">
-        <div class="header-phone-chip">
-          <i class="fa-solid fa-phone"></i>
-          <div>
-            <span class="phone-label">No. Phone / Helpline:</span>
-            <strong class="phone-number">+60 12-345 6789</strong>
+        <div class="header-profile-box">
+          <div class="user-avatar-small" id="headerAvatar">SJ</div>
+          <div class="header-profile-text">
+            <strong id="headerUserName">Customer Profile</strong>
+            <span id="headerUserEmail">customer@cleanride.com</span>
           </div>
         </div>
       </div>
+
     </div>
   </header>
 
   <div class="app-main-layout">
     
     <!-- ================= COLLAPSIBLE SIDEBAR ================= -->
-    <!-- Wireframe Sidebar: Logo, Home, Request, List, Report -->
+    <!-- Requirement: Three bar brought to sidebar, "Collapse Menu" removed, no empty spaces -->
     <aside class="collapsible-sidebar" id="appSidebar">
-      <div class="sidebar-brand">
-        <div class="logo-box">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </div>
-        <div class="brand-words">
-          <span class="brand-title-side">CleanRide</span>
-          <span class="brand-tag-side">Customer Portal</span>
-        </div>
+      
+      <!-- Top: Three Bar Hamburger Toggle -->
+      <div class="sidebar-top-bar">
+        <button class="sidebar-toggle-btn" id="sidebarToggle" title="Toggle Sidebar" onclick="toggleSidebar()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <span class="sidebar-title">Menu</span>
       </div>
 
       <nav class="sidebar-nav">
@@ -79,13 +84,6 @@
         </button>
       </nav>
 
-      <!-- Collapse / Expand trigger helper -->
-      <div class="sidebar-collapse-control">
-        <button class="btn-collapse-toggle" onclick="toggleSidebar()">
-          <i class="fa-solid fa-chevron-left" id="collapseChevron"></i>
-          <span class="collapse-label">Collapse Menu</span>
-        </button>
-      </div>
     </aside>
 
     <!-- ================= MAIN SCROLLABLE CONTENT ================= -->
@@ -138,7 +136,7 @@
       </section>
 
       <!-- ================= 2. REQUEST SERVICE (CUSTOMER) ================= -->
-      <!-- Wireframe: Service Booking and Customization, Customer info, Select service category + details & condition, special instructions, submit, + floating window cost breakdown -->
+      <!-- Wireframe: Service Booking and Customization, Customer info (empty inputs), Select service category + details & condition, special instructions, submit, + floating window cost breakdown -->
       <section id="view-request" class="view-panel">
         
         <div class="request-page-layout">
@@ -152,29 +150,29 @@
 
             <form id="custBookingForm" onsubmit="handleRequestSubmit(event)">
               
-              <!-- Section: Customer information form -->
+              <!-- Section: Customer information form (Requirement: empty full name, no phone, date) -->
               <div class="form-box">
                 <h3 class="box-title"><i class="fa-solid fa-user"></i> Customer Information Form</h3>
                 
                 <div class="form-row">
                   <div class="form-group flex-1">
                     <label for="reqCustName">Full Name *</label>
-                    <input type="text" id="reqCustName" required placeholder="e.g. Sarah Jenkins">
+                    <input type="text" id="reqCustName" required placeholder="Enter full name" value="">
                   </div>
                   <div class="form-group flex-1">
                     <label for="reqCustPhone">No. Phone *</label>
-                    <input type="tel" id="reqCustPhone" required placeholder="e.g. +60 12-889 4432">
+                    <input type="tel" id="reqCustPhone" required placeholder="Enter phone number" value="">
                   </div>
                 </div>
 
                 <div class="form-row">
                   <div class="form-group flex-2">
                     <label for="reqCustAddress">Service Address / Location *</label>
-                    <input type="text" id="reqCustAddress" required placeholder="e.g. No 45, Jalan Harmoni 3, Bukit Indah">
+                    <input type="text" id="reqCustAddress" required placeholder="Enter service address" value="">
                   </div>
                   <div class="form-group flex-1">
                     <label for="reqCustDate">Service Date *</label>
-                    <input type="date" id="reqCustDate" required onchange="checkCapacityForDate()">
+                    <input type="date" id="reqCustDate" required onchange="checkCapacityForDate()" value="">
                     <small id="reqCapacityNotice" class="field-hint"></small>
                   </div>
                 </div>
@@ -507,43 +505,30 @@
     </main>
   </div>
 
-  <!-- ================= FOOTER ================= -->
-  <!-- Wireframe Additional Notes: (Footer: logo, profile, exit) -->
+  <!-- ================= BOTTOM FOOTER (SWAPPED WITH HEADER) ================= -->
+  <!-- Requirement: Header information moved to Footer (Full company name, address, no phone) -->
   <footer class="app-bottom-footer">
     <div class="footer-layout">
-      <!-- 1. Logo -->
-      <div class="footer-brand">
-        <div class="logo-box-small">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </div>
-        <div class="brand-text-sm">
-          <strong>CleanRide</strong>
-          <span>Mobile Upholstery Management</span>
-        </div>
+      <div class="footer-company-info">
+        <h2 class="footer-company-name">CleanRide Management System Sdn. Bhd.</h2>
+        <p class="footer-company-address">
+          <i class="fa-solid fa-location-dot"></i> No. 45, Jalan Harmoni 3, Bukit Indah, 79100 Iskandar Puteri, Johor
+        </p>
       </div>
 
-      <!-- 2. Profile -->
-      <div class="footer-profile-chip">
-        <div class="user-avatar-small" id="footerAvatar">SJ</div>
-        <div class="user-info-small">
-          <strong id="footerUserName">Sarah Jenkins</strong>
-          <span id="footerUserEmail">customer@cleanride.com</span>
+      <div class="footer-phone-chip">
+        <i class="fa-solid fa-phone"></i>
+        <div>
+          <span class="phone-label">No. Phone / Helpline:</span>
+          <strong class="phone-number">+60 12-345 6789</strong>
         </div>
-      </div>
-
-      <!-- 3. Exit -->
-      <div class="footer-exit">
-        <button class="btn btn-exit" onclick="handleExit()" title="Exit & Log Out">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          <span>Exit / Log Out</span>
-        </button>
       </div>
     </div>
   </footer>
 
   <!-- ================= POP-OUT WINDOWS / MODALS ================= -->
 
-  <!-- Modal 1: Payment (Customer) (Wireframe exact: Pop out menu on request page: Pay Deposit, Reference, Payment method, Information, Cancel, Submit) -->
+  <!-- Modal 1: Payment (Customer) -->
   <div id="popPaymentModal" class="modal-overlay">
     <div class="modal-card modal-popout">
       <div class="modal-header">
@@ -555,7 +540,6 @@
       </div>
 
       <div class="modal-body">
-        <!-- Reference -->
         <div class="pop-field-group">
           <label class="pop-label">Booking Reference</label>
           <div class="pop-ref-box" id="payModalRef">CR-JOB-001</div>
@@ -566,7 +550,6 @@
           <strong id="payModalDepositVal">RM 37.50</strong>
         </div>
 
-        <!-- Payment Method -->
         <div class="pop-field-group">
           <label class="pop-label">Payment Method</label>
           <div class="pay-method-grid">
@@ -585,10 +568,9 @@
           </div>
         </div>
 
-        <!-- Information -->
         <div class="pop-field-group">
           <label class="pop-label">Cardholder / Payer Information</label>
-          <input type="text" id="payModalCardName" value="Sarah Jenkins" class="mb-2">
+          <input type="text" id="payModalCardName" placeholder="Cardholder Name" class="mb-2">
           <input type="text" value="•••• •••• •••• 4242" readonly class="mb-2">
           <div class="form-row">
             <input type="text" value="12/28" readonly class="flex-1">
@@ -602,7 +584,6 @@
         </div>
       </div>
 
-      <!-- Cancel, Submit buttons (Wireframe exact) -->
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('popPaymentModal')">
           Cancel
@@ -614,7 +595,7 @@
     </div>
   </div>
 
-  <!-- Modal 2: Appointment Details Pop Out Window (Wireframe exact: "+ details of the appointment will shows as pop out window") -->
+  <!-- Modal 2: Appointment Details Pop Out Window -->
   <div id="popApptDetailsModal" class="modal-overlay">
     <div class="modal-card modal-lg">
       <div class="modal-header">
