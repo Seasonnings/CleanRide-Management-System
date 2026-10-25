@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CleanRide | Customer Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="customer-app-body">
+
+  <!-- ================= TOP HEADER ================= -->
+  <!-- Header Requirement: (Header: full company name, address, no phone) -->
+  <header class="app-top-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="sidebar-toggle-btn" id="sidebarToggle" title="Toggle Sidebar" onclick="toggleSidebar()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="header-company-info">
+          <h1 class="header-company-name">CleanRide Management System Sdn. Bhd.</h1>
+          <p class="header-company-address">
+            <i class="fa-solid fa-location-dot"></i> No. 45, Jalan Harmoni 3, Bukit Indah, 79100 Iskandar Puteri, Johor
+          </p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="header-phone-chip">
+          <i class="fa-solid fa-phone"></i>
+          <div>
+            <span class="phone-label">No. Phone / Helpline:</span>
+            <strong class="phone-number">+60 12-345 6789</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-main-layout">
+    
+    <!-- ================= COLLAPSIBLE SIDEBAR ================= -->
+    <!-- Wireframe Sidebar: Logo, Home, Request, List, Report -->
+    <aside class="collapsible-sidebar" id="appSidebar">
+      <div class="sidebar-brand">
+        <div class="logo-box">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div class="brand-words">
+          <span class="brand-title-side">CleanRide</span>
+          <span class="brand-tag-side">Customer Portal</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
+          <i class="fa-solid fa-house nav-icon"></i>
+          <span class="nav-text">Home</span>
+        </button>
+
+        <button class="nav-item" data-page="request" onclick="navigateTo('request')">
+          <i class="fa-solid fa-calendar-plus nav-icon"></i>
+          <span class="nav-text">Request</span>
+        </button>
+
+        <button class="nav-item" data-page="list" onclick="navigateTo('list')">
+          <i class="fa-solid fa-list-check nav-icon"></i>
+          <span class="nav-text">List</span>
+          <span class="nav-counter" id="sideApptBadge">0</span>
+        </button>
+
+        <button class="nav-item" data-page="report" onclick="navigateTo('report')">
+          <i class="fa-solid fa-triangle-exclamation nav-icon"></i>
+          <span class="nav-text">Report</span>
+          <span class="nav-counter count-alert" id="sideReportBadge" style="display: none;">!</span>
+        </button>
+      </nav>
+
+      <!-- Collapse / Expand trigger helper -->
+      <div class="sidebar-collapse-control">
+        <button class="btn-collapse-toggle" onclick="toggleSidebar()">
+          <i class="fa-solid fa-chevron-left" id="collapseChevron"></i>
+          <span class="collapse-label">Collapse Menu</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN SCROLLABLE CONTENT ================= -->
+    <main class="page-content-wrapper">
+      
+      <!-- ================= 1. HOMEPAGE (CUSTOMER) ================= -->
+      <!-- Wireframe: Welcome, You have 1 appointment, upcoming appoint, Report -->
+      <section id="view-home" class="view-panel active">
+        <div class="welcome-banner-card">
+          <div class="welcome-text-wrap">
+            <span class="welcome-kicker"><i class="fa-solid fa-sparkles text-primary"></i> Customer Dashboard</span>
+            <h2 class="welcome-heading">Welcome, <span id="homeCustName">Customer</span></h2>
+            <p class="welcome-sub" id="homeApptSummary">You have <strong>0 appointments</strong></p>
+          </div>
+          <div class="welcome-quick-actions">
+            <button class="btn btn-primary" onclick="navigateTo('request')">
+              <i class="fa-solid fa-calendar-plus"></i> Request Service
+            </button>
+            <button class="btn btn-secondary" onclick="navigateTo('list')">
+              <i class="fa-solid fa-list-ul"></i> View All Appointments
+            </button>
+          </div>
+        </div>
+
+        <div class="home-sections-grid">
+          <!-- Card: Upcoming Appoint (Wireframe exact: 18/9/2026 - [Rental] Deep clean, etc.) -->
+          <div class="card home-widget-card">
+            <div class="widget-header">
+              <h3><i class="fa-solid fa-calendar-days text-primary"></i> Upcoming Appoint</h3>
+              <span class="badge badge-info" id="homeUpcomingBadge">0 Scheduled</span>
+            </div>
+            <div id="homeUpcomingList" class="upcoming-strip-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Card: Report (Wireframe exact: ! - Missing item (no response)) -->
+          <div class="card home-widget-card">
+            <div class="widget-header">
+              <h3><i class="fa-solid fa-triangle-exclamation text-warning"></i> Report & Feedback Alerts</h3>
+              <button class="btn btn-sm btn-secondary" onclick="navigateTo('report')">
+                <i class="fa-solid fa-plus"></i> New Report
+              </button>
+            </div>
+            <div id="homeReportList" class="reports-strip-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. REQUEST SERVICE (CUSTOMER) ================= -->
+      <!-- Wireframe: Service Booking and Customization, Customer info, Select service category + details & condition, special instructions, submit, + floating window cost breakdown -->
+      <section id="view-request" class="view-panel">
+        
+        <div class="request-page-layout">
+          <!-- Left Column: Form -->
+          <div class="card request-form-container">
+            <div class="card-header-clean">
+              <span class="hero-tag"><i class="fa-solid fa-van-shuttle"></i> Mobile On-Site Service</span>
+              <h2>Service Booking and Customization</h2>
+              <p>Fill out your details. Our cleaning team travels directly to your designated address.</p>
+            </div>
+
+            <form id="custBookingForm" onsubmit="handleRequestSubmit(event)">
+              
+              <!-- Section: Customer information form -->
+              <div class="form-box">
+                <h3 class="box-title"><i class="fa-solid fa-user"></i> Customer Information Form</h3>
+                
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="reqCustName">Full Name *</label>
+                    <input type="text" id="reqCustName" required placeholder="e.g. Sarah Jenkins">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="reqCustPhone">No. Phone *</label>
+                    <input type="tel" id="reqCustPhone" required placeholder="e.g. +60 12-889 4432">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group flex-2">
+                    <label for="reqCustAddress">Service Address / Location *</label>
+                    <input type="text" id="reqCustAddress" required placeholder="e.g. No 45, Jalan Harmoni 3, Bukit Indah">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="reqCustDate">Service Date *</label>
+                    <input type="date" id="reqCustDate" required onchange="checkCapacityForDate()">
+                    <small id="reqCapacityNotice" class="field-hint"></small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Select service category + details and condition -->
+              <div class="form-box">
+                <h3 class="box-title"><i class="fa-solid fa-soap"></i> Select Service Category & Details</h3>
+                
+                <div class="category-pick-grid">
+                  <label class="category-card">
+                    <input type="radio" name="serviceCategory" value="vehicle" checked onchange="switchCategoryFields()">
+                    <div class="cat-card-body">
+                      <div class="cat-icon"><i class="fa-solid fa-car-side"></i></div>
+                      <div>
+                        <strong>Vehicle Interior</strong>
+                        <span>Priced per seat / fleet</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="category-card">
+                    <input type="radio" name="serviceCategory" value="furniture" onchange="switchCategoryFields()">
+                    <div class="cat-card-body">
+                      <div class="cat-icon"><i class="fa-solid fa-couch"></i></div>
+                      <div>
+                        <strong>Sofa & Furniture</strong>
+                        <span>Priced per furniture piece</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="category-card">
+                    <input type="radio" name="serviceCategory" value="carpet" onchange="switchCategoryFields()">
+                    <div class="cat-card-body">
+                      <div class="cat-icon"><i class="fa-solid fa-rug"></i></div>
+                      <div>
+                        <strong>Carpet Cleaning</strong>
+                        <span>Priced per area (m²)</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label class="category-card">
+                    <input type="radio" name="serviceCategory" value="rental" onchange="switchCategoryFields()">
+                    <div class="cat-card-body">
+                      <div class="cat-icon"><i class="fa-solid fa-toolbox"></i></div>
+                      <div>
+                        <strong>Equipment Rental</strong>
+                        <span>Extractors & steam tools / hr</span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Dynamic Detail Boxes -->
+                <!-- 1. Vehicle Details -->
+                <div id="catBox-vehicle" class="category-details-well">
+                  <h4 class="well-title"><i class="fa-solid fa-car"></i> Vehicle Interior Details</h4>
+                  <div class="form-row">
+                    <div class="form-group flex-1">
+                      <label for="vPlate">Vehicle Plate Number (PK) *</label>
+                      <input type="text" id="vPlate" placeholder="e.g. VDK 4921 or Fleet-01">
+                    </div>
+                    <div class="form-group flex-1">
+                      <label for="vType">Vehicle Size / Category</label>
+                      <select id="vType" onchange="calculateFloatingQuote()">
+                        <option value="sedan">Personal Sedan (5 Seats) - RM 125</option>
+                        <option value="suv">SUV / MPV (7 Seats) - RM 175</option>
+                        <option value="bus">Company Bus / Van Fleet (Multi-vehicle)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-row" id="busDetailsRow" style="display: none;">
+                    <div class="form-group flex-1">
+                      <label for="vFleetCount">Number of Vehicles (Bil Vehicle)</label>
+                      <input type="number" id="vFleetCount" min="1" value="1" oninput="calculateFloatingQuote()">
+                    </div>
+                    <div class="form-group flex-1">
+                      <label for="vFleetSeats">Seats per Vehicle</label>
+                      <input type="number" id="vFleetSeats" min="1" value="30" oninput="calculateFloatingQuote()">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. Furniture Details -->
+                <div id="catBox-furniture" class="category-details-well" style="display: none;">
+                  <h4 class="well-title"><i class="fa-solid fa-couch"></i> Sofa & Furniture Details</h4>
+                  <div class="form-row">
+                    <div class="form-group flex-1">
+                      <label for="fItem">Furniture Item</label>
+                      <select id="fItem" onchange="calculateFloatingQuote()">
+                        <option value="sofa_1">Single Recliner / Armchair (RM 50)</option>
+                        <option value="sofa_2">2-Seater Fabric Sofa (RM 90)</option>
+                        <option value="sofa_3">3-Seater L-Shape Sofa (RM 140)</option>
+                        <option value="dining_chair">Dining Chair Set (4 Chairs) (RM 70)</option>
+                        <option value="mattress">Queen / King Mattress (RM 110)</option>
+                        <option value="curtains">Full Set Window Curtains (RM 85)</option>
+                      </select>
+                    </div>
+                    <div class="form-group flex-1">
+                      <label for="fQty">Quantity of Items</label>
+                      <input type="number" id="fQty" min="1" value="1" oninput="calculateFloatingQuote()">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Carpet Details -->
+                <div id="catBox-carpet" class="category-details-well" style="display: none;">
+                  <h4 class="well-title"><i class="fa-solid fa-rug"></i> Carpet Cleaned Dimensions</h4>
+                  <div class="form-row">
+                    <div class="form-group flex-1">
+                      <label for="cArea">Carpet Area Cleaned (in m² area²)</label>
+                      <input type="number" id="cArea" min="1" value="15" oninput="calculateFloatingQuote()">
+                      <small class="field-hint">Base rate: RM 8.00 per m²</small>
+                    </div>
+                    <div class="form-group flex-1">
+                      <label for="cType">Carpet Material / Pile</label>
+                      <select id="cType" onchange="calculateFloatingQuote()">
+                        <option value="standard">Standard Low-Pile Office / Rug</option>
+                        <option value="shag">Shag / High-Pile Luxury Rug (+RM 20)</option>
+                        <option value="wool">Persian / Delicate Wool (+RM 35)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Rental Details -->
+                <div id="catBox-rental" class="category-details-well" style="display: none;">
+                  <h4 class="well-title"><i class="fa-solid fa-toolbox"></i> Rental Tool Selection</h4>
+                  <div class="form-row">
+                    <div class="form-group flex-1">
+                      <label for="rTool">Select Equipment to Borrow</label>
+                      <select id="rTool" onchange="calculateFloatingQuote()">
+                        <option value="extractor">Industrial Spray-Extraction Machine (RM 25 / hr)</option>
+                        <option value="steam">High-Temp Sanitizing Steam Cleaner (RM 30 / hr)</option>
+                        <option value="vacuum">Heavy-Duty Wet & Dry Extractor Vacuum (RM 20 / hr)</option>
+                        <option value="blower">Rapid Turbo Carpet Air Blower (RM 15 / hr)</option>
+                        <option value="full_kit">Complete Pro Detailing Kit (RM 65 / hr)</option>
+                      </select>
+                    </div>
+                    <div class="form-group flex-1">
+                      <label for="rHours">Rental Duration (Hours)</label>
+                      <input type="number" id="rHours" min="1" max="48" value="3" oninput="calculateFloatingQuote()">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Condition & Dirtiness (PDF Requirement) -->
+                <div class="condition-picker-wrap">
+                  <label class="sub-label"><i class="fa-solid fa-fire-flame-curved"></i> Condition / Dirtiness Severity</label>
+                  <div class="dirtiness-selector-pills">
+                    <label class="dirt-pill">
+                      <input type="radio" name="dirtLevel" value="light" checked onchange="calculateFloatingQuote()">
+                      <div class="pill-body">
+                        <strong>Light</strong>
+                        <span>1.0x Base</span>
+                      </div>
+                    </label>
+                    <label class="dirt-pill">
+                      <input type="radio" name="dirtLevel" value="medium" onchange="calculateFloatingQuote()">
+                      <div class="pill-body">
+                        <strong>Medium</strong>
+                        <span>1.25x Multiplier</span>
+                      </div>
+                    </label>
+                    <label class="dirt-pill">
+                      <input type="radio" name="dirtLevel" value="heavy" onchange="calculateFloatingQuote()">
+                      <div class="pill-body">
+                        <strong>Heavy</strong>
+                        <span>1.50x Deep Stains</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Special Instructions (Wireframe exact) -->
+              <div class="form-box">
+                <h3 class="box-title"><i class="fa-solid fa-comment-dots"></i> Special Instructions</h3>
+                <div class="form-group">
+                  <textarea id="reqSpecialInstructions" rows="3" placeholder="e.g. Gate pass required at guardhouse, water tap available on car porch..."></textarea>
+                </div>
+              </div>
+
+              <!-- Submit Button (Wireframe exact: Submit) -->
+              <div class="form-submit-row">
+                <button type="submit" class="btn btn-primary btn-lg" id="btnRequestSubmit">
+                  <i class="fa-solid fa-lock"></i> Submit & Proceed to Deposit Payment
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Right Column: Floating window that shows booking cost breakdown (Wireframe note) -->
+          <div class="floating-cost-sidebar">
+            <div class="card floating-quote-card">
+              <div class="floating-header">
+                <h3><i class="fa-solid fa-receipt text-primary"></i> Cost Breakdown</h3>
+                <span class="live-tag"><span class="pulse-dot"></span> Live Estimate</span>
+              </div>
+
+              <div class="floating-body">
+                <div class="quote-stat-line">
+                  <span class="lbl" id="fltServiceTitle">Vehicle Interior (Sedan)</span>
+                  <span class="val" id="fltBasePrice">RM 125.00</span>
+                </div>
+
+                <div class="quote-stat-line">
+                  <span class="lbl">Condition Multiplier (<span id="fltDirtLevel">Light</span>)</span>
+                  <span class="val" id="fltDirtMultiplier">1.00x</span>
+                </div>
+
+                <div class="quote-stat-line">
+                  <span class="lbl">Travel / On-Site Dispatch</span>
+                  <span class="val text-success">Included</span>
+                </div>
+
+                <div class="quote-divider"></div>
+
+                <div class="quote-total-block">
+                  <span class="tot-label">Estimated Total:</span>
+                  <span class="tot-price" id="fltTotalPrice">RM 125.00</span>
+                </div>
+
+                <!-- 30% Deposit Box -->
+                <div class="dep-pill-box">
+                  <div class="dep-line">
+                    <span>Payable Deposit (30%):</span>
+                    <strong id="fltDepositPrice">RM 37.50</strong>
+                  </div>
+                  <div class="dep-line">
+                    <span>Remaining (Face-to-Face):</span>
+                    <span id="fltRemainingPrice">RM 87.50</span>
+                  </div>
+                  <small class="dep-hint">
+                    <i class="fa-solid fa-shield-halved"></i> Remaining balance paid on-site after service is inspected.
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= 3. DISPLAY APPOINTMENT LIST (CUSTOMER) ================= -->
+      <!-- Wireframe: "You have 3 upcoming appointment", appointment 1 [details], appointment 2 [details], etc. + details will shows as pop out window -->
+      <section id="view-list" class="view-panel">
+        <div class="list-header-banner">
+          <div>
+            <h2 id="apptListTitle">You have 0 upcoming appointment</h2>
+            <p>Track scheduled cleaning appointments, owner contacts, and days countdown.</p>
+          </div>
+          <button class="btn btn-secondary" onclick="renderAppointmentList()">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+
+        <div id="appointmentListContainer" class="appointments-vertical-stack">
+          <!-- Dynamically populated appointments -->
+        </div>
+      </section>
+
+      <!-- ================= 4. LODGE COMPLAINT / REPORT (CUSTOMER) ================= -->
+      <!-- Wireframe: 2-column layout: Left column = "form", Right column = "submitted reports" -->
+      <section id="view-report" class="view-panel">
+        <div class="report-two-col-grid">
+          
+          <!-- Column 1: Form (Wireframe exact) -->
+          <div class="card report-form-card">
+            <div class="card-header-clean">
+              <h2><i class="fa-solid fa-file-pen text-warning"></i> Lodge Complaint / Report</h2>
+              <p>Submit feedback or issues directly to our operations manager.</p>
+            </div>
+
+            <form id="lodgeReportForm" onsubmit="handleReportSubmit(event)">
+              <div class="form-group">
+                <label for="reportApptSelect">Select Appointment / Job Reference *</label>
+                <select id="reportApptSelect" required>
+                  <!-- Filled dynamically -->
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="reportCategory">Issue Category *</label>
+                <select id="reportCategory" required>
+                  <option value="Missing Item">Missing Item / Unreturned Tool</option>
+                  <option value="Stains Not Cleaned">Stains Not Cleaned / Incomplete Service</option>
+                  <option value="Schedule Delay">Cleaner Arrived Late</option>
+                  <option value="Equipment Issue">Rental Equipment Malfunction</option>
+                  <option value="Payment Inquiry">Deposit / Payment Inquiry</option>
+                  <option value="Other">Other Concern</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="reportSubject">Subject Summary *</label>
+                <input type="text" id="reportSubject" required placeholder="e.g. Missing nozzle attachment on vacuum">
+              </div>
+
+              <div class="form-group">
+                <label for="reportDetails">Detailed Report Description *</label>
+                <textarea id="reportDetails" rows="4" required placeholder="Describe what happened so our management team can assist you immediately..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-warning btn-lg">
+                <i class="fa-solid fa-paper-plane"></i> Submit Report
+              </button>
+            </form>
+          </div>
+
+          <!-- Column 2: Submitted Reports (Wireframe exact) -->
+          <div class="card report-history-card">
+            <div class="card-header-clean">
+              <h2><i class="fa-solid fa-inbox text-primary"></i> Submitted Reports</h2>
+              <p>Track your complaints and responses from management.</p>
+            </div>
+
+            <div id="submittedReportsContainer" class="reports-feed">
+              <!-- Dynamically populated reports -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <!-- Wireframe Additional Notes: (Footer: logo, profile, exit) -->
+  <footer class="app-bottom-footer">
+    <div class="footer-layout">
+      <!-- 1. Logo -->
+      <div class="footer-brand">
+        <div class="logo-box-small">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div class="brand-text-sm">
+          <strong>CleanRide</strong>
+          <span>Mobile Upholstery Management</span>
+        </div>
+      </div>
+
+      <!-- 2. Profile -->
+      <div class="footer-profile-chip">
+        <div class="user-avatar-small" id="footerAvatar">SJ</div>
+        <div class="user-info-small">
+          <strong id="footerUserName">Sarah Jenkins</strong>
+          <span id="footerUserEmail">customer@cleanride.com</span>
+        </div>
+      </div>
+
+      <!-- 3. Exit -->
+      <div class="footer-exit">
+        <button class="btn btn-exit" onclick="handleExit()" title="Exit & Log Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Exit / Log Out</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= POP-OUT WINDOWS / MODALS ================= -->
+
+  <!-- Modal 1: Payment (Customer) (Wireframe exact: Pop out menu on request page: Pay Deposit, Reference, Payment method, Information, Cancel, Submit) -->
+  <div id="popPaymentModal" class="modal-overlay">
+    <div class="modal-card modal-popout">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-credit-card text-primary"></i>
+          <h3>Pay Deposit</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('popPaymentModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Reference -->
+        <div class="pop-field-group">
+          <label class="pop-label">Booking Reference</label>
+          <div class="pop-ref-box" id="payModalRef">CR-JOB-001</div>
+        </div>
+
+        <div class="pop-amount-highlight">
+          <span>Required 30% Deposit:</span>
+          <strong id="payModalDepositVal">RM 37.50</strong>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="pop-field-group">
+          <label class="pop-label">Payment Method</label>
+          <div class="pay-method-grid">
+            <label class="method-option active">
+              <input type="radio" name="popPayMethod" value="card" checked>
+              <span><i class="fa-solid fa-credit-card"></i> Card</span>
+            </label>
+            <label class="method-option">
+              <input type="radio" name="popPayMethod" value="fpx">
+              <span><i class="fa-solid fa-building-columns"></i> FPX Bank</span>
+            </label>
+            <label class="method-option">
+              <input type="radio" name="popPayMethod" value="ewallet">
+              <span><i class="fa-solid fa-wallet"></i> Touch 'n Go</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Information -->
+        <div class="pop-field-group">
+          <label class="pop-label">Cardholder / Payer Information</label>
+          <input type="text" id="payModalCardName" value="Sarah Jenkins" class="mb-2">
+          <input type="text" value="•••• •••• •••• 4242" readonly class="mb-2">
+          <div class="form-row">
+            <input type="text" value="12/28" readonly class="flex-1">
+            <input type="text" value="888" readonly class="flex-1">
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="fa-solid fa-shield-check"></i>
+          <span>Secure deposit gateway. Remaining balance will be settled face-to-face upon job completion.</span>
+        </div>
+      </div>
+
+      <!-- Cancel, Submit buttons (Wireframe exact) -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('popPaymentModal')">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="btnSubmitDepositPay" onclick="confirmPaymentAndCreateJob()">
+          <i class="fa-solid fa-check"></i> Submit Deposit Payment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Appointment Details Pop Out Window (Wireframe exact: "+ details of the appointment will shows as pop out window") -->
+  <div id="popApptDetailsModal" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-file-invoice text-primary"></i>
+          <h3 id="popApptModalTitle">Appointment Details</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('popApptDetailsModal')">&times;</button>
+      </div>
+
+      <div class="modal-body" id="popApptModalBody">
+        <!-- Injected dynamically via JS -->
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('popApptDetailsModal')">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="auth.js"></script>
+  <script src="customer.js"></script>
+</body>
+</html>

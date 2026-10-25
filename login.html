@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CleanRide | Sign In / Sign Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    
+    <!-- Sign In Card (matches exact wireframe: CleanRide, Welcome, email, password, Sign in, Don't have account? Sign up) -->
+    <div class="auth-card" id="signinBox">
+      <div class="auth-header">
+        <div class="auth-brand-icon">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <h1 class="brand-title-large">CleanRide</h1>
+        <h2 class="auth-subtitle">Welcome</h2>
+        <p class="auth-caption">Sign in to book upholstery, carpet & vehicle cleaning</p>
+      </div>
+
+      <form id="signinForm" onsubmit="handleSignIn(event)">
+        <div class="form-group auth-field">
+          <label for="signinEmail">
+            <i class="fa-regular fa-envelope"></i> Email Address
+          </label>
+          <div class="input-with-icon">
+            <i class="fa-regular fa-envelope field-icon"></i>
+            <input type="email" id="signinEmail" required placeholder="name@example.com" value="customer@cleanride.com">
+          </div>
+        </div>
+
+        <div class="form-group auth-field">
+          <label for="signinPassword">
+            <i class="fa-solid fa-lock"></i> Password
+          </label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock field-icon"></i>
+            <input type="password" id="signinPassword" required placeholder="••••••••" value="password123">
+          </div>
+        </div>
+
+        <div class="auth-action-row">
+          <button type="submit" class="btn btn-primary auth-submit-btn">
+            Sign in
+          </button>
+          <div class="auth-switch-text">
+            <span>Don't have account?</span>
+            <a href="javascript:void(0)" onclick="toggleAuthMode('signup')" class="auth-link">Sign up</a>
+          </div>
+        </div>
+      </form>
+
+      <!-- Quick Demo Account Fillers -->
+      <div class="demo-account-pills">
+        <span class="demo-label">Quick Demo Access:</span>
+        <button type="button" class="btn-demo-pill" onclick="fillDemo('customer')">
+          <i class="fa-solid fa-user"></i> Customer Demo
+        </button>
+        <button type="button" class="btn-demo-pill" onclick="fillDemo('owner')">
+          <i class="fa-solid fa-user-shield"></i> Owner Email
+        </button>
+      </div>
+    </div>
+
+    <!-- Sign Up Card -->
+    <div class="auth-card" id="signupBox" style="display: none;">
+      <div class="auth-header">
+        <div class="auth-brand-icon">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <h1 class="brand-title-large">CleanRide</h1>
+        <h2 class="auth-subtitle">Create Account</h2>
+        <p class="auth-caption">Join CleanRide for fast mobile upholstery services</p>
+      </div>
+
+      <form id="signupForm" onsubmit="handleSignUp(event)">
+        <div class="form-group auth-field">
+          <label for="signupName"><i class="fa-regular fa-user"></i> Full Name</label>
+          <div class="input-with-icon">
+            <i class="fa-regular fa-user field-icon"></i>
+            <input type="text" id="signupName" required placeholder="e.g. Sarah Jenkins">
+          </div>
+        </div>
+
+        <div class="form-group auth-field">
+          <label for="signupEmail"><i class="fa-regular fa-envelope"></i> Email Address</label>
+          <div class="input-with-icon">
+            <i class="fa-regular fa-envelope field-icon"></i>
+            <input type="email" id="signupEmail" required placeholder="name@example.com">
+          </div>
+        </div>
+
+        <div class="form-group auth-field">
+          <label for="signupPassword"><i class="fa-solid fa-lock"></i> Password</label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock field-icon"></i>
+            <input type="password" id="signupPassword" required placeholder="Create a password">
+          </div>
+        </div>
+
+        <div class="auth-action-row">
+          <button type="submit" class="btn btn-primary auth-submit-btn">
+            Sign up
+          </button>
+          <div class="auth-switch-text">
+            <span>Already have account?</span>
+            <a href="javascript:void(0)" onclick="toggleAuthMode('signin')" class="auth-link">Sign in</a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="auth.js"></script>
+  <script>
+    function toggleAuthMode(mode) {
+      document.getElementById('signinBox').style.display = (mode === 'signin') ? 'block' : 'none';
+      document.getElementById('signupBox').style.display = (mode === 'signup') ? 'block' : 'none';
+    }
+
+    function fillDemo(type) {
+      if (type === 'customer') {
+        document.getElementById('signinEmail').value = 'customer@cleanride.com';
+        document.getElementById('signinPassword').value = 'password123';
+        showToast('Filled Customer credentials', 'info');
+      } else {
+        document.getElementById('signinEmail').value = 'owner@cleanride.com';
+        document.getElementById('signinPassword').value = 'admin123';
+        showToast('Filled Owner / Operations Manager credentials', 'info');
+      }
+    }
+
+    function handleSignIn(e) {
+      e.preventDefault();
+      const email = document.getElementById('signinEmail').value;
+      const pass = document.getElementById('signinPassword').value;
+
+      const res = loginUser(email, pass);
+      if (res.success) {
+        showToast(`Welcome back, ${res.user.fullName}! Redirecting...`, 'success');
+        setTimeout(() => {
+          if (res.user.role === 'customer') {
+            window.location.href = 'customer.html';
+          } else {
+            // For now if owner, alert or redirect
+            window.location.href = 'customer.html'; // Or owner page when created
+          }
+        }, 600);
+      } else {
+        showToast('Invalid credentials.', 'danger');
+      }
+    }
+
+    function handleSignUp(e) {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const pass = document.getElementById('signupPassword').value;
+
+      const res = registerUser(name, email, pass, 'customer');
+      if (res.success) {
+        showToast(`Account created for ${res.user.fullName}! Redirecting to customer portal...`, 'success');
+        setTimeout(() => {
+          window.location.href = 'customer.html';
+        }, 650);
+      } else {
+        showToast(res.message, 'danger');
+      }
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 250);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
