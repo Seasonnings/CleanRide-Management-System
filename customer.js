@@ -841,7 +841,12 @@ window.addEventListener('click', (e) => {
 
 function handleExit() {
   if (confirm('Are you sure you want to exit and log out?')) {
-    logoutUser();
+    if (typeof logoutUser === 'function') {
+      logoutUser();
+    } else {
+      localStorage.removeItem('cleanride_session');
+      window.location.href = '../login.html';
+    }
   }
 }
 

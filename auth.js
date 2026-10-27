@@ -113,7 +113,11 @@ function registerUser(fullName, email, password, role = 'customer') {
 
 function logoutUser() {
   clearCurrentSession();
-  window.location.href = 'login.html';
+  if (window.location.pathname.includes('/customer/') || window.location.pathname.includes('\\customer\\')) {
+    window.location.href = '../login.html';
+  } else {
+    window.location.href = 'login.html';
+  }
 }
 
 // Auto check session when on customer.html
